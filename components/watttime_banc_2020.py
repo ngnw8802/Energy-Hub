@@ -2,7 +2,7 @@ import pandas as pd
 import os.path
 import glob
 
-path = "2020_carbon_accounting_hourly_us_units"
+path = "data"
 
 #only want 2020 for now
 
