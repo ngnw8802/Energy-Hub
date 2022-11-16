@@ -9,8 +9,16 @@ st.write(SingBANCData)
 st.subheader(wattsub)
 st.write(WattTimeDf)
 
-st.subheader(CISO_histogram_tile)
-st.pyplot(fig_histogram)
+# Histogram is possible but not contained in the streamlit API so it doesn't look as good
+# Requires st.pyplot which just displays a matplotlib.pyplot
+# Code for histogram is in histogram.py component
+# st.pyplot(fig_histogram)
+
+st.write("Singularity Data Area Chart")
+st.area_chart(data=SingBANCData, x="datetime_utc", y="consumed_co2_rate_lb_per_mwh_for_electricity")
+
+st.write("WattTime Data Area Chart")
+st.area_chart(data=WattTimeDf, x="timestamp", y="MOER")
 
 st.write("Singularity Data Line Graph")
 st.line_chart(data= SingBANCData,x="datetime_utc",y="consumed_co2_rate_lb_per_mwh_for_electricity")
