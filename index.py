@@ -8,6 +8,13 @@ st.write(SingBANCData)
 st.subheader(wattsub)
 st.write(WattTimeDf)
 
+st.write("Singularity Data Line Graph")
+st.line_chart(data= SingBANCData,x="datetime_utc",y="consumed_co2_rate_lb_per_mwh_for_electricity")
+
+st.write("WattTime Data Line Graph")
+st.line_chart(data= WattTimeDf,x="timestamp",y="MOER")
+
+
 # print("Mean of CO2 rate lb per mwh for electricity in BANC is(from singulairty) for 2020: ")
 # print(SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'].mean())
 

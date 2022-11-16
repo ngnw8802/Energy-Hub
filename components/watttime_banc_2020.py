@@ -1,6 +1,9 @@
 import pandas as pd 
+import numpy as np
 import os.path
 import glob
+import matplotlib.pylab as plt
+
 
 path = "data"
 
