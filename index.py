@@ -1,12 +1,16 @@
 import streamlit as st
 from components.singularity_banc_2020 import *
 from components.watttime_banc_2020 import *
+from components.histogram import *
 
 st.subheader(singsub)
 st.write(SingBANCData)
 
 st.subheader(wattsub)
 st.write(WattTimeDf)
+
+st.subheader(CISO_histogram_tile)
+st.pyplot(fig_histogram)
 
 # print("Mean of CO2 rate lb per mwh for electricity in BANC is(from singulairty) for 2020: ")
 # print(SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'].mean())
