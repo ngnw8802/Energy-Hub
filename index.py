@@ -2,6 +2,7 @@ import streamlit as st
 from components.singularity_banc_2020 import *
 from components.watttime_banc_2020 import *
 from components.histogram import *
+from components.variance import *
 
 st.subheader(singsub)
 st.write(SingBANCData)
@@ -15,9 +16,11 @@ st.pyplot(fig_histogram)
 st.write("Singularity Data Line Graph")
 st.line_chart(data= SingBANCData,x="datetime_utc",y="consumed_co2_rate_lb_per_mwh_for_electricity")
 
-st.write("WattTime Data Line Graph")
-st.line_chart(data= WattTimeDf,x="timestamp",y="MOER")
+#st.write("WattTime Data Line Graph")
+#st.line_chart(data= WattTimeDf,x="timestamp",y="MOER")
 
+st.write("Singularity Variance")
+st.pyplot(fig_variance)
 
 
 
