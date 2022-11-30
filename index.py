@@ -68,8 +68,24 @@ st.line_chart(data= selectBoxChoice,x="datetime_utc",y="consumed_co2_rate_lb_per
 st.write("WattTime Data Line Graph")
 st.line_chart(data= WattTimeDf,x="timestamp",y="MOER")
 
+#violin plot for singularity data
+st.write("Violin plot for first 3 months of 2020 (singularity data)")
+t1 = "2020-02-01 00:00:00-08:00"
+t2 = "2020-03-01 00:00:00-08:00"
+jan = SingBANCData.loc[SingBANCData['datetime_local']<t1]['consumed_co2_rate_lb_per_mwh_for_electricity']
+feb = SingBANCData.loc[SingBANCData['datetime_local']<t2]['consumed_co2_rate_lb_per_mwh_for_electricity']
+mar = SingBANCData.loc[SingBANCData['datetime_local']>=t2]['consumed_co2_rate_lb_per_mwh_for_electricity']
 
+toplot = list([jan,feb,mar])
 
+violin, ax = plt.subplots()
+
+xticklabels = ['Jan 2020', 'Feb 2020','Mar 2020']
+ax.set_xticks([1, 2,3])
+ax.set_xticklabels(xticklabels)
+#axes.violinplot(df1['MOER'])
+ax.violinplot(toplot)
+st.pyplot(violin)
 
 # print("Mean of CO2 rate lb per mwh for electricity in BANC is(from singulairty) for 2020: ")
 # print(SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'].mean())
