@@ -3,7 +3,6 @@ import datetime
 from scipy.stats import norm
 from components.singularity_banc_2020 import *
 from components.watttime_banc_2020 import *
-from components.variance import *
 
 st.subheader(singsub)
 st.write(SingBANCData)
