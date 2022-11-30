@@ -1,5 +1,6 @@
 import streamlit as st
 import datetime
+from scipy.stats import norm
 from components.singularity_banc_2020 import *
 from components.watttime_banc_2020 import *
 from components.variance import *
@@ -65,11 +66,17 @@ st.area_chart(data=WattTimeDf, x="timestamp", y="MOER")
 st.write("Singularity Data Line Graph")
 st.line_chart(data= selectBoxChoice,x="datetime_utc",y="consumed_co2_rate_lb_per_mwh_for_electricity")
 
-#st.write("WattTime Data Line Graph")
-#st.line_chart(data= WattTimeDf,x="timestamp",y="MOER")
+# Display WattTime line chart
+st.write("WattTime Data Line Graph")
+st.line_chart(data= WattTimeDf,x="timestamp",y="MOER")
 
-st.write("Singularity Variance")
-st.pyplot(fig_variance)
+#violin plot for singularity data
+st.write("Violin plot for first 3 months of 2020 (singularity data)")
+t1 = "2020-02-01 00:00:00-08:00"
+t2 = "2020-03-01 00:00:00-08:00"
+jan = SingBANCData.loc[SingBANCData['datetime_local']<t1]['consumed_co2_rate_lb_per_mwh_for_electricity']
+feb = SingBANCData.loc[SingBANCData['datetime_local']<t2]['consumed_co2_rate_lb_per_mwh_for_electricity']
+mar = SingBANCData.loc[SingBANCData['datetime_local']>=t2]['consumed_co2_rate_lb_per_mwh_for_electricity']
 
 toplot = list([jan,feb,mar])
 
@@ -82,16 +89,28 @@ ax.set_xticklabels(xticklabels)
 ax.violinplot(toplot)
 st.pyplot(violin)
 
-# print("Mean of CO2 rate lb per mwh for electricity in BANC is(from singulairty) for 2020: ")
-# print(SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'].mean())
+#Singularity Variance/Distribution
+singmu, singvar = norm.fit(SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'])
 
-# print("Variance of CO2 rate lb per mwh for electricity in BANC is(from singulairty) for 2020: ")
-# print(SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'].var()) 
+variances, s1 = plt.subplots()
+xmin, xmax = SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'].min(), SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'].max()
+xs = np.linspace(xmin, xmax, 100)
+ps = norm.pdf(xs, singmu, singvar)
+s1.hist(SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'], bins=25, density=True, alpha=0.6, color='b')
+s1.plot(xs, ps, 'k', linewidth=2)
 
-# token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6ImJhc2ljLGRhdGE9QVpQUzpTUlA6UEpNX0RDOkVSQ09UX0FVU1RJTjpTUFBfS0M6Q2FsaWZvcm5pYV9hbGwsbWFwcyIsImlhdCI6MTY2NzQwMzgyNywiZXhwIjoxNjY3NDA1NjI3LCJpc3MiOiJXYXR0VGltZSIsInN1YiI6Imp1c3Rpbl9lbmVyZ3lodWIifQ.f-XXRaa0Vw8jLMJRFP7g4fJH59St3uxkCNwAKcgNXIjuOMC9pWwYbuA7YeCpUciKDBCfcVkiwep9yDk4ryidnpL_JoadVFaiOXbdoBSzk5Cx9k2wykKbfNet4cv7DbNk-PnFtJ9sTY5BA43h2DSLQP0fd5MeofPnGRvPDwOD2fK5HQIQtYbyPqS-sIRrztCRpb2JzQIqiGbVsl_TcnfzszaszsNHBMq-sBl52CzYgXQrUjhI7cJ2KtjTB6NWowec9poBEd4o7Y6rVbeD5VfigturGTjJCI2Y2puz2YP2EH1cGW3xjHF5oSxZwTx8m94MoV-Ep9B9wAf4u8AASbOPkg"
+s1.set_title("Variance in Singularity Data")
+s1.set_xlabel("Consumed CO2 Rate for Electricity (lb/mwh)")
+s1.set_ylabel("Distribution")
 
-# print('Mean of MOER in BANC from Wattime for 2020 is: ')
-# print(WattTimeDf['MOER'].mean())
+st.pyplot(variances)
 
-# print('Var of MOER in BANC from Wattime for 2020 is: ')
-# print(WattTimeDf['MOER'].var())
+#wattmu, wattvar = norm.fit(WattTimeDf['MOER'])
+#variancew, s2 = plt.subplots()
+#xmin, xmax = WattTimeDf['MOER'].min(), WattTimeDf['MOER'].max()
+#xw = np.linspace(xmin, xmax, 100)
+#pw = norm.pdf(xw, wattmu, wattvar)
+#s2.hist(WattTimeDf['MOER'], bins=25, density=True, alpha=0.6, color='r')
+#s2.plot(xw, pw, 'k', linewidth=2)
+
+#st.pyplot(variancew)
