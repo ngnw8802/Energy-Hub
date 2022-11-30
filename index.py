@@ -104,6 +104,7 @@ s1.set_ylabel("Distribution")
 
 st.pyplot(variances)
 
+#Wattime Variance/Distribution
 wattmu, wattvar = norm.fit(WattTimeDf['MOER'])
 variancew, s2 = plt.subplots()
 xmin, xmax = WattTimeDf['MOER'].min(), WattTimeDf['MOER'].max()
