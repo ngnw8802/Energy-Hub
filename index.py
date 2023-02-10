@@ -3,6 +3,7 @@ import datetime
 from scipy.stats import norm
 from components.singularity_banc_2020 import *
 from components.watttime_banc_2020 import *
+import numpy as np
 
 st.subheader(singsub)
 st.write(SingBANCData)
@@ -69,52 +70,44 @@ st.line_chart(data= selectBoxChoice,x="datetime_utc",y="consumed_co2_rate_lb_per
 st.write("WattTime Data Line Graph")
 st.line_chart(data= WattTimeDf,x="timestamp",y="MOER")
 
-#violin plot for singularity data
-st.write("Violin plot for first 3 months of 2020 (singularity data)")
-t1 = "2020-02-01 00:00:00-08:00"
-t2 = "2020-03-01 00:00:00-08:00"
-jan = SingBANCData.loc[SingBANCData['datetime_local']<t1]['consumed_co2_rate_lb_per_mwh_for_electricity']
-feb = SingBANCData.loc[SingBANCData['datetime_local']<t2]['consumed_co2_rate_lb_per_mwh_for_electricity']
-mar = SingBANCData.loc[SingBANCData['datetime_local']>=t2]['consumed_co2_rate_lb_per_mwh_for_electricity']
+#caclulations for singularity data
+charge = 30 #kWh
+chargeType = 6 #Level 2 kW
+timeCharge = charge/chargeType
 
-toplot = list([jan,feb,mar])
+st.write("Calculations for Electric Vehicle")
+start = "2020-02-01 00:00:00-08:00"
+end = "2020-02-01 23:00:00-08:00"
 
-violin, ax = plt.subplots()
+chunks = []
 
-xticklabels = ['Jan 2020', 'Feb 2020','Mar 2020']
-ax.set_xticks([1, 2,3])
-ax.set_xticklabels(xticklabels)
-#axes.violinplot(df1['MOER'])
-ax.violinplot(toplot)
-st.pyplot(violin)
+breakupDay = np.arange(0, 24, timeCharge)
 
-#Singularity Variance/Distribution
-singmu, singvar = norm.fit(SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'])
+for step in breakupDay:
+    if step < 10:
+        step = "0"+str(int(step))
+    else:
+        step = str(int(step))
+    chunks.append("2020-02-01 "+ step + ":00:00-08:00")
 
-variances, s1 = plt.subplots()
-xmin, xmax = SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'].min(), SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'].max()
-xs = np.linspace(xmin, xmax, 100)
-ps = norm.pdf(xs, singmu, singvar)
-s1.hist(SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'], bins=25, density=True, alpha=0.6, color='b')
-s1.plot(xs, ps, 'k', linewidth=2)
+mask = (SingBANCData['datetime_local']>start) & (SingBANCData['datetime_local']<=end)
 
-s1.set_title("Variance in Singularity Data")
-s1.set_xlabel("Consumed CO2 Rate for Electricity (lb/mwh)")
-s1.set_ylabel("Distribution")
+day = SingBANCData.loc[mask]
 
-st.pyplot(variances)
+st.write(day)
 
-#Wattime Variance/Distribution
-wattmu, wattvar = norm.fit(WattTimeDf['MOER'])
-variancew, s2 = plt.subplots()
-xmin, xmax = WattTimeDf['MOER'].min(), WattTimeDf['MOER'].max()
-xw = np.linspace(xmin, xmax, 100)
-pw = norm.pdf(xw, wattmu, wattvar)
-s2.hist(WattTimeDf['MOER'], bins=25, density=True, alpha=0.6, color='r')
-s2.plot(xw, pw, 'k', linewidth=2)
+meanList = []
 
-s2.set_title("Variance in Wattime Data")
-s2.set_xlabel("MOER")
-s2.set_ylabel("Distribution")
+for data in range(len(chunks)-1):
+    meanList.append(SingBANCData.loc[(SingBANCData['datetime_local']>chunks[data]) & (SingBANCData['datetime_local']<=chunks[data+1])]['consumed_co2_rate_lb_per_mwh_for_electricity'].mean())
 
-st.pyplot(variancew)
+bestMean = min(meanList)
+bestIdx = meanList.index(bestMean)
+
+for i in range(len(meanList)):
+    if bestIdx==i:
+        st.write("Best Time to Charge is:", chunks[i], "to", chunks[i+1])
+    else:
+        continue
+
+st.line_chart(data= day,x="datetime_local",y="consumed_co2_rate_lb_per_mwh_for_electricity")
