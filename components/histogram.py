@@ -9,5 +9,5 @@ import matplotlib.pyplot as plt
 SingBANCData = pd.read_csv('data/BANC.csv')
 BANCdata = SingBANCData['consumed_co2_rate_lb_per_mwh_for_electricity'].to_list()
 
-fig_histogram, ax = plt.subplots(figsize=(10,10)) 
+fig_histogram, ax = plt.subplots(figsize=(10,5)) 
 ax.hist(BANCdata, bins = 20)

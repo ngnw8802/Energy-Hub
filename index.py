@@ -1,30 +1,114 @@
 import streamlit as st
-from components.singularity_banc_2020 import *
-from components.watttime_banc_2020 import *
+from components.singularity_table import *
+from components.watttime_table import *
 from components.histogram import *
+from PIL import Image
 
-st.subheader(singsub)
-st.write(SingBANCData)
+image = Image.open('./header.png')
+st.image(image)
+st.header("App Description.....")
 
-st.subheader(wattsub)
-st.write(WattTimeDf)
+col1, col2, col3 = st.columns([1,1,1])
+
+single_page = st.empty()
+
+with single_page.container():
+  st.subheader("Set Location:")
+  option = st.selectbox(
+    'Set Location: ',
+    ('Alabama', 'Colorado', 'Oregon'), label_visibility="hidden")
+  submit = st.button("Submit Location")
+
+
+if (submit):
+  location = option
+  single_page.empty()
+  st.pyplot(fig_histogram)
+  with col1:
+    tech = st.selectbox(
+    'Technology: ',
+    ('Tesla', 'Dryer', 'Washer'))
+  with col2:
+    charge = st.selectbox(
+    'Charging type: ',
+    ('1', '2', '3'))
+  with col3:
+    interval = st.selectbox(
+    'Charging time: ',
+    ('1 hr', '2 hrs', '3+ hrs'))
+  st.write("Here is where we would put the summary of the calculations")
+
+
+# def home():
+#     st.write("Home")
+
+# def choice_one():
+#     st.write("Optimizing clean energy")
+
+# def choice_two():
+#     st.write("choice 2")
+
+# def choice_three():
+#     st.write("choice 3")
+
+# with col1:
+#   homeb = st.button("Home")
+
+# with col2:
+#   choice_oneb = st.button("1")
+
+# with col3:
+#   choice_twob = st.button("2")
+
+# with col4:
+#   choice_threeb = st.button("3")
+
+# if (homeb):
+#   home()
+
+# if (choice_oneb):
+#   choice_one()
+
+# if (choice_twob):
+#   choice_two()
+  
+# if (choice_threeb):
+#   choice_three()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# st.subheader(singsub)
+# st.write(SingBANCData)
+
+# st.subheader(wattsub)
+# st.write(WattTimeDf)
 
 # Histogram is possible but not contained in the streamlit API so it doesn't look as good
 # Requires st.pyplot which just displays a matplotlib.pyplot
 # Code for histogram is in histogram.py component
-# st.pyplot(fig_histogram)
 
-st.write("Singularity Data Area Chart")
-st.area_chart(data=SingBANCData, x="datetime_utc", y="consumed_co2_rate_lb_per_mwh_for_electricity")
+# st.write("Singularity Data Area Chart")
+# st.area_chart(data=SingBANCData, x="datetime_utc", y="consumed_co2_rate_lb_per_mwh_for_electricity")
 
-st.write("WattTime Data Area Chart")
-st.area_chart(data=WattTimeDf, x="timestamp", y="MOER")
+# st.write("WattTime Data Area Chart")
+# st.area_chart(data=WattTimeDf, x="timestamp", y="MOER")
 
-st.write("Singularity Data Line Graph")
-st.line_chart(data= SingBANCData,x="datetime_utc",y="consumed_co2_rate_lb_per_mwh_for_electricity")
+# st.write("Singularity Data Line Graph")
+# st.line_chart(data= SingBANCData,x="datetime_utc",y="consumed_co2_rate_lb_per_mwh_for_electricity")
 
-st.write("WattTime Data Line Graph")
-st.line_chart(data= WattTimeDf,x="timestamp",y="MOER")
+# st.write("WattTime Data Line Graph")
+# st.line_chart(data= WattTimeDf,x="timestamp",y="MOER")
 
 
 
