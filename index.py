@@ -24,8 +24,6 @@ def calculate(tech, charge):
 
     day = SingBANCData.loc[mask]
 
-    st.write(day)
-
     meanList = []
 
     for data in range(len(chunks)-1):
