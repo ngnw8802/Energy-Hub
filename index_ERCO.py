@@ -2,10 +2,16 @@ import streamlit as st
 import datetime
 from components.singularity_erco_2020 import *
 from components.singularity_erco_2021 import *
+from PIL import Image
+
+image = Image.open('./header.png')
+st.image(image)
+
+col1, col2, col3 = st.columns([1,1,1])
 
 # Choose balancing authority to be displayed
-option = st.selectbox(
-    'Which balancing authority would you like to display?',
+with col1: option = st.selectbox(
+    'Balancing Authority:',
     ('AEC', 'AECI', 'AVA', 'AZPS', 'BANC', 'BPAT', 'CHPD', 'CISO', 'CPLE', 'CPLW', 'DOPD', 'DUK', 'EPE', 'ERCO', 'FMPP', 'FPC', 'FPL', 'GCPD', 'GVL', 'HST', 'IID', 'IPCO', 'ISNE', 'JEA', 'LDWP', 'LGEE', 'MISO', 'NEVP', 'NSB', 'NWMT', 'NYIS', 'PACE', 'PACW', 'PGE', 'PJM', 'PNM', 'PSCO', 'PSEI', 'SC', 'SCEG', 'SCL', 'SEC', 'SOCO', 'SPA', 'SRP', 'SWPP', 'TAL', 'TEC', 'TEPC', 'TIDC', 'TPWR', 'TVA', 'WACM', 'WALC', 'WAUW'))
 BAselection = option + ".csv"
 fileToRead1 = "data_2020/" + BAselection
@@ -13,8 +19,15 @@ fileToRead2 = "data_2021/" + BAselection
 selectBoxChoice1 = pd.read_csv(fileToRead1)
 selectBoxChoice2 = pd.read_csv(fileToRead2)
 
+with col2: charge = st.selectbox(
+    'Amount to charge (kWh): ',
+    ('10', '20', '30', '40', '50', '60'))
+with col3: interval = st.selectbox(
+    'Charge rate: ',
+    ('1kW', '2kW', '3kW', '4kW', '5kW', '6kW'))
+
 options = st.multiselect(
-    'Which indicators would you like to graph',
+    'Emmissions types to graph',
     ['co2', 'ch4', 'n2o', 'co2e', 'nox', 'so2', 'co2_adjusted', 'ch4_adjusted', 'n2o_adjusted', 'co2e_adjusted', 'nox_adjusted', 'so2_adjusted'],
     'co2')
 
@@ -77,9 +90,9 @@ st.line_chart(data= selectBoxChoice1,x="datetime_utc",y=indicators)
 
 
 # Display mean emissions for same period as chart
-mean21 = selectBoxChoice1.mean()
+mean20 = selectBoxChoice1.mean()
 st.write("Mean data")
-st.table(mean21)
+st.table(mean20)
 
 # mean = selectboxChoice1[co2]
 # find mean min max
@@ -117,6 +130,6 @@ st.line_chart(data= selectBoxChoice2,x="datetime_utc",y=indicators)
 
 
 # Display mean emissions for same period as chart
-mean22 = selectBoxChoice2.mean()
+mean21 = selectBoxChoice2.mean()
 st.write("Mean data")
-st.table(mean22)
+st.table(mean21)
