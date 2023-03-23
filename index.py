@@ -4,6 +4,45 @@ from components.watttime_table import *
 from components.histogram import *
 from PIL import Image
 
+def calculate(tech, charge):
+    timeCharge = tech/charge
+    start = "2020-02-01 00:00:00-08:00"
+    end = "2020-02-01 23:00:00-08:00"
+
+    chunks = []
+
+    breakupDay = np.arange(0, 24, timeCharge)
+
+    for step in breakupDay:
+        if step < 10:
+            step = "0"+str(int(step))
+        else:
+            step = str(int(step))
+        chunks.append("2020-02-01 "+ step + ":00:00-08:00")
+
+    mask = (SingBANCData['datetime_local']>start) & (SingBANCData['datetime_local']<=end)
+
+    day = SingBANCData.loc[mask]
+
+    meanList = []
+
+    for data in range(len(chunks)-1):
+        meanList.append(SingBANCData.loc[(SingBANCData['datetime_local']>chunks[data]) & (SingBANCData['datetime_local']<=chunks[data+1])]['consumed_co2_rate_lb_per_mwh_for_electricity'].mean())
+
+    bestMean = min(meanList)
+    bestIdx = meanList.index(bestMean)
+    chunkIdx = 0
+
+    result = tuple()
+
+    for i in range(len(meanList)):
+        if bestIdx==i:
+            result = (chunks[i], chunks[i+1])
+        else:
+            continue
+    
+    return result
+
 image = Image.open('./header.png')
 st.image(image)
 st.header("App Description.....")
@@ -36,7 +75,10 @@ if (submit):
     interval = st.selectbox(
     'Charging time: ',
     ('1 hr', '2 hrs', '3+ hrs'))
-  st.write("Here is where we would put the summary of the calculations")
+
+  (r1, r2) = calculate(60, 6)
+
+  st.write("Best to charge from", r1, "to", r2, ".")
 
 
 # def home():
