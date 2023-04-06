@@ -71,7 +71,7 @@ with col2: chargeAmt = st.selectbox(
     ('10', '20', '30', '40', '50', '60'))
 with col3: chargeRate = st.selectbox(
     'Charge rate (kW): ',
-    ('1', '2', '3', '4', '5', '6'))
+    ('3', '4', '5', '6'))
 
 options = st.multiselect(
     'Emissions types to monitor (charging slot is always determined by CO2 emissions)',
