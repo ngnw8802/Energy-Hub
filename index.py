@@ -47,38 +47,33 @@ image = Image.open('./header.png')
 st.image(image)
 st.header("App Description.....")
 
+
+
+
+st.subheader("Set Location:")
+option = st.selectbox(
+  'Set Location: ',
+  ('Alabama', 'Colorado', 'Oregon'), label_visibility="hidden")
+submit = st.button("Submit Location")
 col1, col2, col3 = st.columns([1,1,1])
-
-single_page = st.empty()
-
-with single_page.container():
-  st.subheader("Set Location:")
-  option = st.selectbox(
-    'Set Location: ',
-    ('Alabama', 'Colorado', 'Oregon'), label_visibility="hidden")
-  submit = st.button("Submit Location")
-
-
-if (submit):
-  location = option
-  single_page.empty()
-  st.pyplot(fig_histogram)
-  with col1:
-    tech = st.selectbox(
-    'Technology: ',
-    ('Tesla', 'Dryer', 'Washer'))
-  with col2:
-    charge = st.selectbox(
-    'Charging type: ',
-    ('1', '2', '3'))
-  with col3:
-    interval = st.selectbox(
-    'Charging time: ',
-    ('1 hr', '2 hrs', '3+ hrs'))
+location = option
+st.pyplot(fig_histogram)
+with col1:
+  tech = st.selectbox(
+  'Technology: ',
+  ('Tesla', 'Dryer', 'Washer'))
+with col2:
+  charge = st.selectbox(
+  'Charging type: ',
+  ('1', '2', '3'))
+with col3:
+  interval = st.selectbox(
+  'Charging time: ',
+  ('1 hr', '2 hrs', '3+ hrs'))
 
   (r1, r2) = calculate(60, 6)
 
-  st.write("Best to charge from", r1, "to", r2, ".")
+st.write("Best to charge from", r1, "to", r2, ".")
 
 
 # def home():
