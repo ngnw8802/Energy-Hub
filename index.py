@@ -47,34 +47,29 @@ image = Image.open('./header.png')
 st.image(image)
 st.header("App Description.....")
 
-col1, col2, col3 = st.columns([1,1,1])
+col0, col1, col2, col3 = st.columns([1,1,1,1])
 
 single_page = st.empty()
 
-with single_page.container():
-  st.subheader("Set Location:")
-  option = st.selectbox(
-    'Set Location: ',
-    ('Alabama', 'Colorado', 'Oregon'), label_visibility="hidden")
-  submit = st.button("Submit Location")
 
-
-if (submit):
-  location = option
-  single_page.empty()
-  st.pyplot(fig_histogram)
-  with col1:
-    tech = st.selectbox(
-    'Technology: ',
-    ('Tesla', 'Dryer', 'Washer'))
-  with col2:
-    charge = st.selectbox(
-    'Charging type: ',
-    ('1', '2', '3'))
-  with col3:
-    interval = st.selectbox(
-    'Charging time: ',
-    ('1 hr', '2 hrs', '3+ hrs'))
+single_page.empty()
+st.pyplot(fig_histogram)
+with col0:
+   location = st.selectbox(
+  'Set Location: ',
+  ('Alabama', 'Colorado', 'Oregon'), label_visibility="hidden")
+with col1:
+  tech = st.selectbox(
+  'Technology: ',
+  ('Tesla', 'Dryer', 'Washer'))
+with col2:
+  charge = st.selectbox(
+  'Charging type: ',
+  ('1', '2', '3'))
+with col3:
+  interval = st.selectbox(
+  'Charging time: ',
+  ('1 hr', '2 hrs', '3+ hrs'))
 
   (r1, r2) = calculate(60, 6)
 
