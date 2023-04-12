@@ -142,7 +142,7 @@ chargeRate = int(chargeRate)
 
 (startTimeOptimal, endTimeOptimal, emissions) = calculate(chargeAmt, chargeRate, Data2021)
 
-st.write("Best to charge from", startTimeOptimal, "to", endTimeOptimal, "as average CO2 emissions were", emissions, "rate_lb_per_mwh_for_electricity for this period.")
+st.write("Best to charge from", startTimeOptimal[:-9], "to", endTimeOptimal[:-9], "as average CO2 emissions were", emissions, "rate_lb_per_mwh_for_electricity for this period.")
 
 # Create dataframe of optimal charge period and add suffix to column names of optimalChargeData so optimalChargeData and Data2021 can be plotted together
 mask2 = (Data2021['datetime_utc'] >= startTimeOptimal) & (Data2021['datetime_utc'] <= endTimeOptimal)
