@@ -1,7 +1,6 @@
 import streamlit as st
 import datetime
-from components.singularity_erco_2020 import *
-from components.singularity_erco_2021 import *
+import pandas as pd
 from PIL import Image
 
 def calculate(chargeAmt, chargeRate, Data):
@@ -46,22 +45,14 @@ def calculate(chargeAmt, chargeRate, Data):
 image = Image.open('./header.png')
 st.image(image)
 
-st.write("Demo: Amount to charge / Charge Rate resolves to nearest whole hour")
-
 col1, col2, col3 = st.columns([1,1,1])
-
-st.write(" ")
-st.write(" ")
-st.write(" ")
 
 # Choose balancing authority to be displayed
 with col1: option = st.selectbox(
     'Balancing Authority:',
     ('AEC', 'AECI', 'AVA', 'AZPS', 'BANC', 'BPAT', 'CHPD', 'CISO', 'CPLE', 'CPLW', 'DOPD', 'DUK', 'EPE', 'ERCO', 'FMPP', 'FPC', 'FPL', 'GCPD', 'GVL', 'HST', 'IID', 'IPCO', 'ISNE', 'JEA', 'LDWP', 'LGEE', 'MISO', 'NEVP', 'NSB', 'NWMT', 'NYIS', 'PACE', 'PACW', 'PGE', 'PJM', 'PNM', 'PSCO', 'PSEI', 'SC', 'SCEG', 'SCL', 'SEC', 'SOCO', 'SPA', 'SRP', 'SWPP', 'TAL', 'TEC', 'TEPC', 'TIDC', 'TPWR', 'TVA', 'WACM', 'WALC', 'WAUW'))
 BAselection = option + ".csv"
-fileToRead1 = "data_2020/" + BAselection
 fileToRead2 = "data_2021/" + BAselection
-Data2020 = pd.read_csv(fileToRead1)
 Data2021 = pd.read_csv(fileToRead2)
 
 with col2: chargeAmt = st.selectbox(
@@ -72,7 +63,7 @@ with col3: chargeRate = st.selectbox(
     ('3', '4', '5', '6'))
 
 options = st.multiselect(
-    'Emissions types to monitor (charging slot is always determined by CO2 emissions)',
+    'Emissions types to monitor',
     ['co2', 'ch4', 'n2o', 'co2e', 'nox', 'so2', 'co2_adjusted', 'ch4_adjusted', 'n2o_adjusted', 'co2e_adjusted', 'nox_adjusted', 'so2_adjusted'],
     'co2')
 
@@ -103,29 +94,76 @@ for x in options:
     if x == 'so2_adjusted':
         indicators.append('consumed_so2_rate_lb_per_mwh_for_electricity_adjusted')
 
-st.write(" ")
-st.write(" ")
-st.write(" ")
+# data starts at hour 8 for 1/1/21. Code is hardcoded to be hour 8 for this day no matter what hour is selected
 # Choose timeframe
 startDate = datetime.date(2021, 1, 1)
-d = st.date_input(
-    "Select the start time of charge window (must be in year 2021):",
+endDate = datetime.date(2021, 12, 31)
+
+col1, col2, col3 = st.columns([1,1,1])
+
+with col1: d = st.date_input(
+    "Day to start charging (2021):",
     startDate)
 
 startDate = d
 startDate = str(startDate)
-if (startDate == "2021-01-01"):
-    start = startDate + " 08:00:00+00:00"
-else:
-    start = startDate + " 00:00:00+00:00"
 
-endDate = datetime.date(2021, 12, 31)
-d = st.date_input(
-    "Select the end time of charge window (must be in year 2021):",
+with col2: hour = st.selectbox(
+    'Hour to start charging: ',
+    ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'))
+
+with col3: midDay = st.selectbox(
+    ' ',
+    ('am', 'pm'))
+if midDay == 'am':
+    if (startDate == "2021-01-01"):
+        start = startDate + " 08:00:00+00:00"
+    elif str(hour) == "12":
+        start = startDate + " " + "00:00:00+00:00"
+    elif len(str(hour)) == 2:
+        start = startDate + " " + str(hour) + ":00:00+00:00"
+    else:
+        start = startDate + " " + "0" + str(hour) + ":00:00+00:00"
+if midDay == 'pm':
+    hour = int(hour)
+    if hour == 12:
+        start = startDate + " " + "12:00:00+00:00"
+    else:
+        hour += 12
+        if (startDate == "2021-01-01"):
+            start = startDate + " 08:00:00+00:00"
+        else:
+            start = startDate + " " + str(hour) + ":00:00+00:00"
+
+col11, col22, col33 = st.columns([1,1,1])
+
+with col11: d1 = st.date_input(
+    "Day to end charging by (2021):",
     endDate)
-endDate = d
+endDate = d1
 endDate = str(endDate)
-end = endDate + " 23:00:00+00:00"
+
+with col22: hour2 = st.selectbox(
+    'Hour to end charging by: ',
+    ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'))
+
+with col33: midDay2 = st.selectbox(
+    ' ',
+    ('am', 'pm'), key = "1")
+if midDay2 == 'am':
+    if str(hour2) == "12":
+        end = endDate + " " + "00:00:00+00:00"
+    elif len(str(hour2)) == 2:
+        end = endDate + " " + str(hour2) + ":00:00+00:00"
+    else:
+        end = endDate + " " + "0" + str(hour2) + ":00:00+00:00"
+if midDay2 == 'pm':
+    hour2 = int(hour2)
+    if hour2 == 12:
+        end = endDate + " " + "12:00:00+00:00"
+    else:
+        hour2 += 12
+        end = endDate + " " + str(hour2) + ":00:00+00:00"
 
 st.write(" ")
 st.write(" ")
@@ -138,9 +176,15 @@ Data2021 = Data2021.loc[mask]
 chargeAmt = int(chargeAmt)
 chargeRate = int(chargeRate)
 
-(timeStampTuple, emissions) = calculate(chargeAmt, chargeRate, Data2021)
+# check if charge window is long enough based on inputs for "amount to charge" and "charge rate"
+if int(chargeAmt/chargeRate) < int(Data2021.shape[0]):
+    (timeStampTuple, emissions) = calculate(chargeAmt, chargeRate, Data2021)
 
-st.write("Best to charge from", timeStampTuple[0][:-9], "to", timeStampTuple[1][:-9], "as average CO2 emissions were", emissions, "rate_lb_per_mwh_for_electricity for this period.")
+else:
+    st.write("You have selected to short of a timeframe to charge completely. Please expand your selected timeframe and try again.")
+    st.stop()
+
+st.write("Best to charge from", timeStampTuple[0][:-9], "to", timeStampTuple[1][:-9], "as average CO2 emissions on the power grid were", str(round(emissions, 2)), "rate_lb_per_mwh_for_electricity for this period.")
 
 # code below here except for the last two lines serves to plot the light blue line on top of the dark blue line in our graph to show the optimal charging period
 # create dataframe of optimal charge period and add suffix to column names of optimalChargeData so optimalChargeData and Data2021 can be plotted together
@@ -159,5 +203,4 @@ for ind in indicators:
 allInicators = indicators + indicators_2
 
 # display 2020 ERCO Singularity line chart
-st.write("Singularity 2020 Data Line Graph")
 st.line_chart(data = df_combined[allInicators])
